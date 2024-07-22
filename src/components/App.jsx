@@ -1,22 +1,23 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { addContact, deleteContact } from '../redux/contactsSlice';
+import { fetchContacts, addContact, deleteContact } from '../redux/contactsSlice';
 import { setFilter } from '../redux/filterSlice';
-import { getContacts, getFilter } from '../redux/selectors'; 
+import { getContacts, getFilter, getLoader, getError } from '../redux/selectors'; 
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
+import { RotatingLines } from 'react-loader-spinner';
 
 export const App = () => {
   const contacts = useSelector(getContacts);
   const filter = useSelector(getFilter); 
   const dispatch = useDispatch();
+  const isLoading = useSelector(getLoader);
+  const error = useSelector(getError)
 
-  const validatedContacts = contacts.map(contact => ({
-    id: contact.id,
-    name: String(contact.name),
-    number: String(contact.number),
-  }));
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const handleAddContact = contact => {
     dispatch(addContact(contact));
@@ -30,20 +31,30 @@ export const App = () => {
     dispatch(setFilter(newFilter));
   };
 
-  const filteredContacts = contacts.filter(contact => {
-    console.log('Contact:', contact);
-    console.log('Contact name:', contact.name)
-
-    return typeof contact.name === 'string' && contact.name.toLowerCase().includes(filter.toLowerCase())
-});
+  const filteredContacts = (contacts || []).filter(contact =>
+    typeof contact.name === 'string' && contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
 
   return (
     <>
       <h1>Phonebook</h1>
-      <ContactForm contacts={validatedContacts} addContact={handleAddContact} />
+      <ContactForm contacts={contacts || []} addContact={handleAddContact} />
 
       <h2>Contacts</h2>
       <Filter filter={filter} setFilter={handleSetFilter} />
+
+      {isLoading && <p><RotatingLines
+          visible={true}
+          height="76"
+          width="76"
+          color="blue"
+          strokeWidth="3"
+          animationDuration="0.75"
+          ariaLabel="rotating-lines-loading"
+          wrapperStyle={{}}
+          wrapperClass=""
+          /></p>}
+      {error && <p>Error: {error}</p>}
       
       <ContactList 
         contacts={filteredContacts} 
