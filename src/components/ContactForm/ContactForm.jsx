@@ -7,8 +7,6 @@ export const ContactForm = ({ addContact, contacts }) => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
-  console.log('Contacts prop in ContactForm:', contacts);
-
 const resetForm = () => {
     setName('');
     setNumber('');
@@ -29,8 +27,6 @@ const handleSubmit = e => {
   if (name.trim() === '' || number.trim() === '') {
     return;
   }
-
-  console.log('Contacts array:', contacts);
         
   // if it is an existing contact, alert
 const existingContact = contacts.find(contact => {
