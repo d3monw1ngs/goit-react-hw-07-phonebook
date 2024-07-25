@@ -49,7 +49,7 @@ export const App = () => {
           width="76"
           color="blue"
           strokeWidth="3"
-          animationDuration="0.75"
+          animationDuration="0.2"
           ariaLabel="rotating-lines-loading"
           wrapperStyle={{}}
           wrapperClass=""
