@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchContacts, addContact, deleteContact } from '../redux/contactsSlice';
+import { fetchContacts, addContact, deleteContact } from '../redux/operators';
 import { setFilter } from '../redux/filterSlice';
 import { getContacts, getFilter, getLoader, getError } from '../redux/selectors'; 
 import { ContactForm } from './ContactForm/ContactForm';
@@ -9,13 +9,13 @@ import { Filter } from './Filter/Filter';
 import { RotatingLines } from 'react-loader-spinner';
 
 export const App = () => {
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilter); 
+  const contacts = useSelector(getContacts) || [];
+  const filter = useSelector(getFilter) || ''; 
   const dispatch = useDispatch();
   const isLoading = useSelector(getLoader);
   const error = useSelector(getError)
 
-  useEffect(() => {
+   useEffect(() => {
     dispatch(fetchContacts());
   }, [dispatch]);
 
@@ -31,14 +31,14 @@ export const App = () => {
     dispatch(setFilter(newFilter));
   };
 
-  const filteredContacts = (contacts || []).filter(contact =>
+  const filteredContacts = contacts.filter(contact =>
     typeof contact.name === 'string' && contact.name.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
     <>
       <h1>Phonebook</h1>
-      <ContactForm contacts={contacts || []} addContact={handleAddContact} />
+      <ContactForm contacts={contacts} addContact={handleAddContact} />
 
       <h2>Contacts</h2>
       <Filter filter={filter} setFilter={handleSetFilter} />
